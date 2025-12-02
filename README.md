@@ -1,156 +1,180 @@
 FlowGentic–IMPRESS Hybrid Agent
-Autonomous Multi-Stage Protein Analysis Workflows on HPC (Phase 2 Completed)
+Autonomous Multi-Stage Protein Analysis Pipelines on HPC (Phase 2 Complete)
 
-This repository contains the Phase 1–2 implementation of an autonomous HPC workflow agent built on:
+This repository contains the Phase 1–2 implementation of an autonomous workflow execution system integrating:
 
-IMPRESS (Radical-Cybertools) for distributed workflow execution
+- IMPRESS (Radical-Cybertools) for HPC pipeline orchestration
 
-Radical AsyncFlow as the asynchronous execution backend
+- Radical AsyncFlow for asynchronous execution
 
-FlowGentic-style workflow generation
+- A modular agent architecture for planning and running computational biology workflows
 
-HPC resources (ACCESS: Anvil)
+- A workspace system for reproducible results
 
-A Python-based agent core for orchestration, planning, and workspace management
+- A foundation for LLM-driven workflow construction (Phase 3)
 
-Phase 2 is fully functional: the agent can execute IMPRESS pipelines end-to-end, write results to workspace directories, and return structured outputs.
+This system is designed for fully automated, multi-step structural bioinformatics analysis on ACCESS HPC systems such as Anvil.
 
-We now begin Phase 3: LLM-driven multi-step pipeline planning and, later, fine-tuning with custom datasets.
+1. Project Summary
 
-Project Overview
+The goal of this project is to build an intelligent workflow agent capable of:
 
-The agent is designed to translate natural language scientific queries into structured, multi-step computational workflows involving structural biology tools such as:
+Interpreting natural-language scientific requests
 
-AlphaFold2 (AF2)
+Constructing multi-step analysis pipelines
 
-FoldSeek
+Executing these pipelines on HPC infrastructure via IMPRESS
 
-ΔΔG mutation scoring
+Saving and returning structured results for downstream interpretation
 
-Protein MPNN sequence design
+Eventually learning to generalize through few-shot examples and dataset-driven fine-tuning
 
-CAZy / UniProt annotation tools
+Phase 2 (current release) implements:
 
-While these real tools are not yet integrated (see the section below), the architecture is ready to support them.
+IMPRESS execution
 
-Tool Implementations (Currently Stubs)
+AsyncFlow backend
 
-The tools/ directory contains placeholder stubs:
+Automated workspace creation
 
-tools/
-├── alphafold_stub.py
-├── foldseek_stub.py
-├── ddg_stub.py
-├── mpnn_stub.py
+Pipeline definition and execution flow
+
+Stub tool interface for future AlphaFold2, FoldSeek, ΔΔG, and MPNN integrations
+
+2. Repository Structure
+flowgentic_agent/
+│
+├── agent_core/
+│   ├── executor.py          # IMPRESS execution wrapper
+│   ├── simple_pipeline.py   # Phase 2 demonstration pipeline
+│   ├── workspace.py         # Workspace manager
+│   ├── planner.py           # Early rule-based planner
+│   ├── llm_planner.py       # (Phase 3) LLM-driven planner (coming)
+│   ├── models.py
+│
+├── tools/                   # Tool stubs (placeholders)
+│   ├── alphafold_stub.py
+│   ├── foldseek_stub.py
+│   ├── ddg_stub.py
+│   ├── mpnn_stub.py
+│
+├── configs/                 # YAML configuration files
+│   ├── impress.yml
+│   ├── flowgentic.yml
+│
+├── jobs_example/            # Example IMPRESS/SLURM job scripts (few-shot data)
+│
+├── legacy/                  # Phase 1 reference implementation
+│   ├── run_phase1.py
+│
+├── run_phase2.py            # Main Phase 2 entrypoint
+├── README.md
+├── requirements.txt
+└── .gitignore
 
 
-These do not execute real AF2, FoldSeek, DDG, or MPNN workloads yet.
-They are included so the pipeline planner, executor, and IMPRESS backend can be developed and tested independently from heavy computational components.
+Directories such as agent_workspace/, outputs/, and logs/ are runtime-only and ignored by Git.
 
-Real tool integrations (future phases)
-Tool	Status	Notes
-AlphaFold2 (AF2_GPU)	Not implemented	Will run via /projects/f_sdk94_1/Tools/AF2_GPU
-FoldSeek	Not implemented	CPU/cluster pipeline; depends on AF2 output
-ΔΔG (mutation prediction)	Not implemented	Sequence + structure-based ΔΔG scoring
-Protein MPNN	Not implemented	Will support structure-conditioned sequence redesign
+3. Phase 2 Functionality
+3.1 IMPRESS Execution Workflow
 
-These will be integrated during Phase 3–4 after the LLM-based planner is operational.
+Phase 2 provides a complete execution flow:
 
-Phase 2 Capabilities
-IMPRESS Integration
+User input → run_phase2.py
 
-Manager-based workflow execution
+Workspace created automatically
 
-Automatic pipeline orchestration
+Executor initializes RadicalExecutionBackend
 
-WorkflowEngine initialized with backend
+IMPRESS Manager starts pipeline
 
-RadicalExecutionBackend functional on Anvil
+SimplePipeline executes (placeholder logic)
 
-Workspace Management
+Results written to workspace/results/output.json
 
-Workspaces are created for each request:
+Executor loads JSON and returns final output
+
+This enables full backend testing without requiring heavy computational tools.
+
+3.2 Workspace System
+
+Each run produces an isolated directory:
 
 agent_workspace/Q_<timestamp>/
     input/
     logs/
-    results/
     intermediate/
+    results/
 
-Successful End-to-End Execution
 
-SimpleProteinPipeline:
+The pipeline is responsible for writing a final output.json file.
 
-Receives FASTA + workspace from executor
+3.3 Current Simple Pipeline
 
-Runs under IMPRESS
+The demonstration pipeline:
 
-Saves results/output.json
+Accepts FASTA
 
-Executor loads this JSON and returns it as the final output
+Simulates AF2/FoldSeek/DDG computations via stubs
 
-Phase 3: LLM-Driven Workflow Planning (In Progress)
+Writes structured results into the workspace
 
-Phase 3 introduces an LLM-based planner (llm_planner.py) that:
+Returns them to the user
 
-Reads natural-language queries
+This provides the foundation for real downstream tool integrations in Phase 3–4.
 
-Generates a structured multi-step workflow plan (JSON)
+4. Tools: Current Status (Stubs Only)
 
-Converts each stage into IMPRESS PipelineSetup objects
+The real computational tools are not yet implemented. The following files are placeholders:
 
-Executes them sequentially or conditionally (depending on results)
+alphafold_stub.py
 
-Enables adaptive, intelligent workflows for protein analysis
+foldseek_stub.py
 
-Example of desired LLM output format
+ddg_stub.py
+
+mpnn_stub.py
+
+They currently emulate tool behavior for:
+
+Pipeline testing
+
+IMPRESS integration
+
+Workspace I/O validation
+
+LLM planning prototyping
+
+Actual AlphaFold2, FoldSeek, ΔΔG, and MPNN pipelines will be implemented in Phase 3/4.
+
+5. Phase 3: LLM-Driven Workflow Planning (Upcoming)
+
+Phase 3 introduces an intelligent LLM-driven planner that will:
+
+Parse natural language requests
+
+Construct a structured multi-step workflow graph
+
+Map each step to IMPRESS PipelineSetup objects
+
+Handle dependencies (e.g., FoldSeek requires AF2 output)
+
+Generate workflows such as:
+
+Example:
+
 {
   "stages": [
-    {"stage": "AF2", "tool": "alphafold", "params": {"fasta": "<FASTA>"}},
+    {"stage": "AF2", "tool": "alphafold", "params": {"fasta": "<seq>"}},
     {"stage": "FOLDSEEK", "tool": "foldseek", "depends_on": "AF2"},
     {"stage": "DDG", "tool": "ddg_mutation", "depends_on": "AF2"}
   ]
 }
 
 
-The planner will initially use few-shot prompt engineering, followed by building a dataset for LoRA fine-tuning.
+We will begin with few-shot engineered examples, followed by dataset creation and eventual fine-tuning.
 
-Repository Structure
-flowgentic_agent/
-│
-├── agent_core/
-│   ├── executor.py
-│   ├── simple_pipeline.py
-│   ├── workspace.py
-│   ├── planner.py            # Earlier rule-based version
-│   ├── llm_planner.py        # Phase 3 (to be added)
-│   ├── models.py
-│
-├── tools/                    # Stubs only (real tools come later)
-│   ├── alphafold_stub.py
-│   ├── foldseek_stub.py
-│   ├── ddg_stub.py
-│   ├── mpnn_stub.py
-│
-├── configs/
-│   ├── impress.yml
-│   ├── flowgentic.yml
-│
-├── jobs_example/             # Example HPC job scripts for LLM training
-│
-├── run_phase2.py             # Main entrypoint for Phase 2
-├── run_phase1.py             # Legacy version
-│
-├── README.md
-├── requirements.txt
-├── .gitignore
-│
-├── agent_workspace/          # Runtime scratch (ignored)
-├── logs/                     # Ignored
-├── outputs/                  # Ignored
-└── tmp/                      # Ignored
-
-Running on Anvil
+6. Running on ACCESS: Anvil
 
 Start interactive session:
 
@@ -163,53 +187,51 @@ Run the agent:
 
 python run_phase2.py
 
-Roadmap
-Phase 3 (current)
+7. Roadmap
+Phase 1
+
+Rule-based planning prototype (completed)
+
+Phase 2
+
+IMPRESS + AsyncFlow execution
+Workspace system
+Tool interface (stubs)
+Demonstration pipeline
+(Completed)
+
+Phase 3
 
 LLM planner
-
 Workflow graph generation
-
-Mapping plans to IMPRESS pipelines
-
-Few-shot dataset
-
-tool → pipeline schema
+Few-shot dataset construction
+Real tool interface definitions
 
 Phase 4
 
-Real AlphaFold2 integration
-
-FoldSeek pipeline
-
-ΔΔG scoring
-
-MPNN sequence design
-
-Multi-stage workflow execution
+Full integration of AF2, FoldSeek, ΔΔG, MPNN
+Adaptive pipelines
+Performance tuning on HPC
 
 Phase 5
 
-Streamlit interface
-
-Provenance tracking
-
+Web interface (Streamlit)
+Provenance database
 Continuous learning
+Production-grade automation
 
-Advanced replanning with IMPRESS adaptive functions
+8. Contributions
 
-Contributions
+This project welcomes contributions in:
 
-Collaborators are welcome to work on:
+HPC orchestration
 
-LLM-based planning
+IMPRESS/AsyncFlow
 
-IMPRESS pipelines
+Structural bioinformatics
 
-tool integration
+LLM planning and dataset creation
 
-SLURM/HPC optimization
+Tool integration (AF2, FoldSeek, DDG, MPNN)
 
-dataset generation
-
-model finetuning
+Software engineering and pipeline design
