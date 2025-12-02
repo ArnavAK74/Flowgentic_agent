@@ -1,0 +1,32 @@
+# Workspaces and temporary files
+agent_workspace/
+outputs/
+logs/
+tmp/
+*.tmp
+*.log
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Virtual environments
+envs/
+.venv/
+venv/
+
+# IMPRESS / Radical install directories
+impress_backend/
+IMPRESS-main/
+flowgentic-main/
+
+# System files
+.DS_Store
+
+# Data directories
+data/
+db/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+

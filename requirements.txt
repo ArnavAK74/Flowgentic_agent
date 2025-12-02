@@ -1,0 +1,20 @@
+# FlowGentic-IMPRESS Agent Requirements
+
+# Core system
+tqdm
+pyyaml
+
+# Agent & Planner tools
+openai
+
+# Radical-Cybertools (IMPRESS ecosystem)
+impress
+radical.pilot
+radical.saga
+radical.utils
+radical.entk
+radical.asyncflow
+
+# Optional: JSON & Pydantic models
+pydantic
+

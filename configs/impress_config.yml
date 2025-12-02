@@ -1,0 +1,19 @@
+resources:
+  queue: "gpu"
+  walltime: "02:00:00"
+  cpus: 4
+  gpus: 1
+
+paths:
+  input_dir: "./data/inputs"
+  output_dir: "./data/outputs"
+  tmp_dir: "./data/tmp"
+  log_dir: "./logs/impress"
+
+pipeline:
+  default: "protein_binding"   # or whatever name exists in src/impress/pipelines/
+  stages:
+    - alphafold
+    - foldseek
+    - ddg_mutation
+
